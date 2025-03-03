@@ -7,6 +7,7 @@ from github import Github
 import tempfile
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 
 class GitHubPullRequestReviewer:
@@ -14,12 +15,14 @@ class GitHubPullRequestReviewer:
         self.github = Github(os.environ["GITHUB_TOKEN"])
         self.llm = OpenAI(model="gpt-4")
 
+    # Fetch repository object
     def get_repository(self, repo_name):
         try:
             return self.github.get_repo(repo_name)
         except Exception as e:
             raise ValueError(f"Repository not found: {repo_name}")
 
+    # Fetch PR details
     def fetch_pr_details(self, repo_name, pr_number):
         repo = self.get_repository(repo_name)
         try:
@@ -33,6 +36,7 @@ class GitHubPullRequestReviewer:
         except Exception as e:
             raise ValueError(f"Failed to fetch PR #{pr_number}: {str(e)}")
 
+    # Review PR
     def review_pr(self, repo_name, pr_number):
         try:
             pr_details = self.fetch_pr_details(repo_name, pr_number)
@@ -68,6 +72,7 @@ class GitHubPullRequestReviewer:
         """
         return review
 
+    # Summarize changes in PR files for review comment
     def _summarize_changes(self, files):
         summary = []
         for file in files:
